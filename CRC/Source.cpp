@@ -24,8 +24,25 @@ string divisor(string Message, string Genrator)
 	string s = "";
 	for (int i = MS - GS + 1; i < MS; i++)
 		s += Message[i];
-	cout << endl << s << endl;
+	//cout << endl << s << endl;
 	return s;
+}
+string generator(string msg, string generator)
+{
+	//get generator bits number
+	int generatorBits = generator.length();
+	//make a copy to the message to add zeros to it
+	string msgCopy = msg;
+	//adding zeros to the message copy equal to the generator lenght-1
+	for (int i = 0; i < generator.length() - 1; i++)
+	{
+		msgCopy += "0";
+	}
+	//get the remainder
+	string remainder = divisor(msgCopy, generator);
+	//adding the remainder to the message
+	msg += remainder;
+	return msg;
 }
 bool Verifier(string  Message, string Genrator)
 {
@@ -78,6 +95,8 @@ void main(void)
 		cout << "\n Enter Generator : ";
 		cin >> Generator;
 
+		//call generator
+		cout << endl << generator(message, Generator);
 		//call function
 		cout << endl << Verifier(message, Generator) << endl;
 		//	getch();
