@@ -54,8 +54,30 @@ bool Verifier(string  Message, string Genrator)
 			return false;
 	return true;
 }
+unsigned int measure_message_len(int msg)
+{
+	if (msg == 0)
+	{
+		return 1;
+	}
+	else
+	{
+		unsigned int msb_index = sizeof(msg) * 8 - 1;
+		while ((msg & (1 << msb_index)) == 0)
+		{
+			msb_index--;
+		}
+		unsigned int msg_len = msb_index + 1;
+		return msg_len;
+	}
+}
+void alter(unsigned int& message, unsigned int index)
+{
+	unsigned int message_len = measure_message_len(message);
+	message ^= (1 << (message_len - index));
+}
 string Crc(string Message, string Genrator) { string s; return s; }
-string Alter(string Message) { string s; return s; }
+
 string CheckInputErrors(string InputLine) { string s; return s; }
 
 void main(void)
