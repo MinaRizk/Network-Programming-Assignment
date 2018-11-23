@@ -1,6 +1,7 @@
 #include<iostream>
 #include<string.h>
 #include<string>
+#include<fstream>
 
 using namespace std;
 
@@ -54,31 +55,16 @@ bool Verifier(string  Message, string Genrator)
 			return false;
 	return true;
 }
-unsigned int measure_message_len(int msg)
-{
-	if (msg == 0)
-	{
-		return 1;
-	}
-	else
-	{
-		unsigned int msb_index = sizeof(msg) * 8 - 1;
-		while ((msg & (1 << msb_index)) == 0)
-		{
-			msb_index--;
-		}
-		unsigned int msg_len = msb_index + 1;
-		return msg_len;
-	}
-}
-void alter(unsigned int& message, unsigned int index)
-{
-	unsigned int message_len = measure_message_len(message);
-	message ^= (1 << (message_len - index));
-}
 string Crc(string Message, string Genrator) { string s; return s; }
-
+string Alter(string Message) { string s; return s; }
 string CheckInputErrors(string InputLine) { string s; return s; }
+void alter(string& message, unsigned int bitNo)
+{
+	if (message[bitNo - 1] == '0')
+		message[bitNo - 1] = '1';
+	else
+		message[bitNo - 1] = '0';
+}
 
 void main(void)
 {
@@ -106,10 +92,79 @@ void main(void)
 	**************/
 
 	string message, Generator;
-
+	bool isCorrect;
+	ifstream file("crc.txt");
+	if (file.is_open())
+	{
+		file >> message;
+		file >> Generator;
+		string genOutput = generator(message, Generator);
+		cout << "Transmitted message is " + genOutput << endl;
+		cout << "Input is " + message << endl;
+		cout << "Do you want to alter the message?(y/n)" << endl;
+		string choice;
+	alter:
+		cin >> choice;
+		if (choice == "y"||choice=="Y")
+		{
+			loop:
+			cout << "Enter the number of bit to alter:" << endl;
+			unsigned int bitNo;
+			try
+			{
+				cin >> bitNo;
+			}
+			catch(string e)
+			{
+				cout << "Enter a valid number" << endl;
+				cin.clear();
+				while (cin.get() != '\n')
+				{
+					continue;
+				}
+				goto loop;
+			}
+			if (bitNo > 0 && bitNo <= genOutput.length())
+			{
+				alter(genOutput, bitNo);
+				isCorrect = Verifier(genOutput, Generator);
+			}
+			else
+			{
+				cout << "The bit number is invalid" << endl;
+				cin.clear();
+				while (cin.get() != '\n')
+				{
+					continue;
+				}
+				goto loop;
+			}
+		}
+		else if (choice == "n" || choice == "N")
+		{
+			isCorrect = Verifier(genOutput, Generator);
+		}
+		else
+		{
+			cout << "Enter a (y/n):" << endl;
+			goto alter;
+		}
+		cout << "Received message is " + genOutput << endl;
+		if (isCorrect == true)
+			cout << "Message is received correctly" << endl;
+		else
+			cout << "Message is received with errors" << endl;
+	}
+	else
+	{
+		cout << "error in opening file" << endl;
+	}
+	file.close();
+	/*
 	while (1)
 	{
 		//Get message
+		
 		cout << "\n Enter message : ";
 		cin >> message;
 
@@ -123,6 +178,7 @@ void main(void)
 		cout << endl << Verifier(message, Generator) << endl;
 		//	getch();
 	}
+	*/
 	system("pause");
 
 
